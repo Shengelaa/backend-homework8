@@ -146,6 +146,47 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({ error: "Internal Server Error" }));
     }
   }
+
+  if (parsedUrl.pathname === "/update" && req.method === "PUT") {
+    const query = queryString.parse(parsedUrl.query);
+    const id = query.id;
+    const name = query.name;
+    const price = query.price;
+    if (!id || !name || !price) {
+      res.writeHead(400, {
+        "content-type": "application/json",
+      });
+      res.end(JSON.stringify({ message: "id + name + price is required" }));
+    }
+
+    try {
+      const fileContent = await fs.readFile("products.json", "utf-8");
+      const products = JSON.parse(fileContent);
+      const productIndex = products.findIndex(
+        (product) => product.id === Number(id)
+      );
+
+      const newProduct = {
+        id: Number(id),
+        name: name,
+        price: Number(price),
+      };
+
+      products[productIndex] = newProduct;
+
+      await fs.writeFile("products.json", JSON.stringify(products, null, 2));
+      res.writeHead(200, {
+        "content-type": "application/json",
+      });
+      res.end(JSON.stringify({ message: "Product updated successfully" }));
+    } catch (err) {
+      console.error("Error updating product:", err);
+      res.writeHead(500, {
+        "content-type": "application/json",
+      });
+      res.end(JSON.stringify({ error: "Internal Server Error" }));
+    }
+  }
 });
 
 server.listen(5000, () => {
