@@ -50,13 +50,24 @@ const server = http.createServer(async (req, res) => {
       date.getTime() + matchingCity.offset * 60 * 60 * 1000
     );
 
-    console.log(`Time in ${matchingCity.city} Is ${new Date(time)}`);
+    console.log(
+      `Time in ${matchingCity.city} Is ${new Date(time).toUTCString()}`
+    );
+
+    //UTCSTring roar mimewera boloshi Georgia Standard time-s miwerda
+    //da magizianebda
 
     res.writeHead(200, {
       "content-type": "application/json",
     });
 
-    res.end(JSON.stringify({ message: "Done" }));
+    res.end(
+      JSON.stringify({
+        message: `Time in ${matchingCity.city} is ${new Date(
+          time
+        ).toUTCString()}`,
+      })
+    );
   }
 });
 
